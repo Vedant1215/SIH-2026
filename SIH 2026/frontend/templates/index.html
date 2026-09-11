@@ -4,120 +4,187 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIH 2026 — 3D ULPIN Drone Ingestion & Pre-Reconstruction</title>
-  
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <!-- Google Fonts & Lucide Icons -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRC9fT9D/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- Custom Styles -->
+
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
+
   <div class="app-container">
+
     <!-- Top Header -->
     <header class="top-header">
+
       <div class="header-left">
+
         <div class="logo-badge">
           <i data-lucide="box" class="icon-pulse"></i>
           <span class="badge-sih">SIH 2026 #26011</span>
         </div>
+
         <div class="title-group">
           <h1>3D ULPIN Drone Ingestion & Mapping</h1>
-          <p class="subtitle">Automated EXIF/RTK Normalization, Quality Validation & SfM Pre-Reconstruction</p>
+          <p class="subtitle">
+            Automated EXIF/RTK Normalization, Quality Validation & SfM Pre-Reconstruction
+          </p>
         </div>
+
       </div>
 
       <!-- Quick Metrics Ribbon -->
       <div class="header-metrics">
+
         <div class="metric-card" id="card-images">
           <span class="metric-label">Images</span>
           <span class="metric-val" id="val-total-images">--</span>
         </div>
+
         <div class="metric-card" id="card-gps">
           <span class="metric-label">GPS Geotagged</span>
           <span class="metric-val text-success" id="val-gps-coverage">--</span>
         </div>
+
         <div class="metric-card" id="card-rtk">
           <span class="metric-label">RTK Solution</span>
           <span class="metric-val text-info" id="val-rtk-status">--</span>
         </div>
+
         <div class="metric-card" id="card-gcp">
           <span class="metric-label">GCP Targets</span>
           <span class="metric-val text-warning" id="val-gcp-count">--</span>
         </div>
+
       </div>
 
       <!-- Action Button -->
       <div class="header-actions">
-        <button class="btn btn-secondary" id="btn-refresh" title="Re-scan and refresh dataset">
-          <i data-lucide="refresh-cw"></i> Rescan
+
+        <button class="btn btn-secondary"
+                id="btn-refresh"
+                title="Re-scan and refresh dataset">
+          <i data-lucide="refresh-cw"></i>
+          Rescan
         </button>
-        <button class="btn btn-primary btn-construct" id="btn-construct-3d">
-          <i data-lucide="cube"></i> CONSTRUCT 3D
+
+        <button class="btn btn-primary btn-construct"
+                id="btn-construct-3d">
+          <i data-lucide="cube"></i>
+          CONSTRUCT 3D
         </button>
-        <button class="btn btn-success" id="btn-open-3d" style="display: none;">
-          <i data-lucide="eye"></i> OPEN 3D MODEL
+
+        <button class="btn btn-success"
+                id="btn-open-3d"
+                style="display: none;">
+          <i data-lucide="eye"></i>
+          OPEN 3D MODEL
         </button>
+
       </div>
+
     </header>
 
-    <!-- Main Workspace Layout -->
+
+    <!-- Main Workspace -->
     <main class="workspace-layout">
-      <!-- Left Panel: Map & Trajectory -->
+
+      <!-- Left Panel -->
       <section class="panel panel-map">
+
         <div class="panel-header">
+
           <div class="panel-title">
-            <i data-lucide="map-pin"></i> Flight Trajectory & Geospatial Markers
+            <i data-lucide="map-pin"></i>
+            Flight Trajectory & Geospatial Markers
           </div>
+
           <div class="map-controls">
+
             <label class="toggle-control">
               <input type="checkbox" id="toggle-trajectory" checked>
               <span>Trajectory</span>
             </label>
+
             <label class="toggle-control">
               <input type="checkbox" id="toggle-gcps" checked>
               <span>GCPs</span>
             </label>
+
             <label class="toggle-control">
               <input type="checkbox" id="toggle-heading" checked>
               <span>Headings</span>
             </label>
-            <button class="btn btn-xs" id="btn-fit-bounds" title="Fit to flight bounds">
-              <i data-lucide="maximize"></i> Fit
+
+            <button class="btn btn-xs"
+                    id="btn-fit-bounds"
+                    title="Fit to flight bounds">
+              <i data-lucide="maximize"></i>
+              Fit
             </button>
+
           </div>
+
         </div>
+
         <div class="map-container" id="leaflet-map"></div>
+
       </section>
 
-      <!-- Right Panel: Gallery, Table & Details -->
+
+      <!-- Right Panel -->
       <section class="panel panel-gallery">
+
         <div class="panel-header">
+
           <div class="panel-title">
-            <i data-lucide="grid"></i> Image Telemetry & Quality Gallery
+            <i data-lucide="grid"></i>
+            Image Telemetry & Quality Gallery
           </div>
+
           <div class="view-switchers">
-            <button class="btn btn-xs view-btn active" id="btn-view-grid" title="Grid View">
+
+            <button class="btn btn-xs view-btn active"
+                    id="btn-view-grid"
+                    title="Grid View">
               <i data-lucide="layout-grid"></i>
             </button>
-            <button class="btn btn-xs view-btn" id="btn-view-table" title="Table View">
+
+            <button class="btn btn-xs view-btn"
+                    id="btn-view-table"
+                    title="Table View">
               <i data-lucide="list"></i>
             </button>
+
           </div>
+
         </div>
+
 
         <!-- Filter Bar -->
         <div class="filter-toolbar">
+
           <div class="search-box">
+
             <i data-lucide="search"></i>
-            <input type="text" id="filter-search" placeholder="Search filename or ID...">
+
+            <input type="text"
+                   id="filter-search"
+                   placeholder="Search filename or ID...">
+
           </div>
 
+
           <div class="select-group">
+
             <select id="filter-gps" class="select-filter">
               <option value="">GPS: All</option>
               <option value="available">GPS: Available</option>
@@ -144,171 +211,418 @@
               <option value="drone_yaw">Sort: Heading</option>
               <option value="metadata_completeness">Sort: Completeness</option>
             </select>
+
           </div>
+
         </div>
+
 
         <!-- Gallery Container -->
         <div class="gallery-content" id="gallery-container">
-          <!-- Populated dynamically by gallery.js -->
-          <div class="loading-state">
-            <div class="spinner"></div>
-            <span>Ingesting and analyzing dataset...</span>
-          </div>
+
+          <!-- Demo data is populated by app.js -->
+
         </div>
 
-        <!-- Pagination / Count Footer -->
+
+        <!-- Gallery Footer -->
         <div class="gallery-footer">
-          <span id="footer-count">Showing 0 of 0 images</span>
-          <span id="dataset-location-tag" class="dataset-tag"></span>
+
+          <span id="footer-count">
+            Showing 0 of 0 images
+          </span>
+
+          <span id="dataset-location-tag"
+                class="dataset-tag">
+          </span>
+
         </div>
+
       </section>
+
     </main>
+
   </div>
 
-  <!-- Image Detail Modal / Side Drawer -->
-  <div class="modal-backdrop" id="detail-modal" style="display: none;">
+
+  <!-- Image Detail Modal -->
+  <div class="modal-backdrop"
+       id="detail-modal"
+       style="display: none;">
+
     <div class="modal-card modal-detail">
+
       <div class="modal-header">
-        <div class="modal-title" id="modal-image-title">MAX_0002.JPG</div>
-        <button class="modal-close" id="btn-close-detail">&times;</button>
+
+        <div class="modal-title"
+             id="modal-image-title">
+          MAX_0002.JPG
+        </div>
+
+        <button class="modal-close"
+                id="btn-close-detail">
+          &times;
+        </button>
+
       </div>
-      <div class="modal-body detail-grid" id="modal-detail-body">
-        <!-- Populated dynamically -->
+
+      <div class="modal-body detail-grid"
+           id="modal-detail-body">
       </div>
+
     </div>
+
   </div>
 
-  <!-- 3D Reconstruction Pipeline Progress & Preparation Modal -->
-  <div class="modal-backdrop" id="reconstruct-modal" style="display: none;">
+
+  <!-- 3D Reconstruction Modal -->
+  <div class="modal-backdrop"
+       id="reconstruct-modal"
+       style="display: none;">
+
     <div class="modal-card modal-reconstruct">
+
       <div class="modal-header">
+
         <div class="modal-title-group">
-          <i data-lucide="layers" class="icon-accent"></i>
+
+          <i data-lucide="layers"
+             class="icon-accent"></i>
+
           <div>
-            <h3>3D Photogrammetric Reconstruction Engine</h3>
-            <p>COLMAP 4.2.0 CUDA · Structure-from-Motion · MVS Dense Stereo · Poisson Mesh</p>
+
+            <h3>
+              3D Photogrammetric Reconstruction Engine
+            </h3>
+
+            <p>
+              COLMAP 4.2.0 CUDA · Structure-from-Motion ·
+              MVS Dense Stereo · Poisson Mesh
+            </p>
+
           </div>
+
         </div>
-        <button class="modal-close" id="btn-close-reconstruct">&times;</button>
+
+        <button class="modal-close"
+                id="btn-close-reconstruct">
+          &times;
+        </button>
+
       </div>
+
 
       <div class="modal-body reconstruct-content">
-        <!-- Live Progress Ribbon -->
-        <div class="reconstruct-progress-box" id="reconstruct-progress-box" style="display: none;">
+
+        <!-- Progress -->
+        <div class="reconstruct-progress-box"
+             id="reconstruct-progress-box"
+             style="display: none;">
+
           <div class="progress-info-row">
-            <span class="stage-name" id="reconstruct-stage-title">[1/10] Preparing images</span>
-            <span class="stage-pct" id="reconstruct-stage-pct">0%</span>
+
+            <span class="stage-name"
+                  id="reconstruct-stage-title">
+              [1/10] Preparing images
+            </span>
+
+            <span class="stage-pct"
+                  id="reconstruct-stage-pct">
+              0%
+            </span>
+
           </div>
+
           <div class="progress-bar-track">
-            <div class="progress-bar-fill" id="reconstruct-bar-fill" style="width: 0%;"></div>
+
+            <div class="progress-bar-fill"
+                 id="reconstruct-bar-fill"
+                 style="width: 0%;">
+            </div>
+
           </div>
+
         </div>
 
-        <!-- Readiness Checklist -->
-        <div class="checklist-card" id="checklist-card">
-          <h4>Readiness Verification Checklist</h4>
-          <div class="checklist-items" id="checklist-container">
-            <div class="check-item"><span class="badge-dot"></span> Checking image density...</div>
+
+        <!-- Checklist -->
+        <div class="checklist-card"
+             id="checklist-card">
+
+          <h4>
+            Readiness Verification Checklist
+          </h4>
+
+          <div class="checklist-items"
+               id="checklist-container">
+
+            <div class="check-item">
+              <span class="badge-dot"></span>
+              Checking image density...
+            </div>
+
           </div>
+
         </div>
 
-        <!-- Terminal Log Viewer -->
-        <div class="terminal-log-box" id="terminal-log-box" style="display: none;">
+
+        <!-- Terminal -->
+        <div class="terminal-log-box"
+             id="terminal-log-box"
+             style="display: none;">
+
           <div class="terminal-header">
-            <i data-lucide="terminal"></i> COLMAP Execution Log
+            <i data-lucide="terminal"></i>
+            COLMAP Execution Log
           </div>
-          <pre class="terminal-output" id="terminal-output">Waiting for pipeline start...</pre>
+
+          <pre class="terminal-output"
+               id="terminal-output">
+Waiting for pipeline start...
+          </pre>
+
         </div>
 
-        <!-- Manifest Highlights -->
-        <div class="manifest-highlights" id="manifest-summary">
-          <!-- Summary data -->
+
+        <!-- Manifest -->
+        <div class="manifest-highlights"
+             id="manifest-summary">
         </div>
+
 
         <!-- Ready Banner -->
-        <div class="ready-banner" id="ready-banner">
+        <div class="ready-banner"
+             id="ready-banner">
+
           <i data-lucide="check-circle-2"></i>
-          <span id="ready-banner-text">DATASET READY FOR 3D RECONSTRUCTION</span>
+
+          <span id="ready-banner-text">
+            DATASET READY FOR 3D RECONSTRUCTION
+          </span>
+
         </div>
+
       </div>
+
 
       <div class="modal-footer">
-        <button class="btn btn-danger btn-xs" id="btn-cancel-reconstruct" style="display: none;">
-          <i data-lucide="x"></i> Cancel Reconstruction
+
+        <button class="btn btn-danger btn-xs"
+                id="btn-cancel-reconstruct"
+                style="display: none;">
+
+          <i data-lucide="x"></i>
+          Cancel Reconstruction
+
         </button>
-        <a href="/api/reconstruction/manifest" download="reconstruction_manifest.json" class="btn btn-secondary btn-xs" id="btn-download-manifest">
-          <i data-lucide="download"></i> Manifest
+
+
+        <a href="/api/reconstruction/manifest"
+           download="reconstruction_manifest.json"
+           class="btn btn-secondary btn-xs"
+           id="btn-download-manifest">
+
+          <i data-lucide="download"></i>
+          Manifest
+
         </a>
-        <button class="btn btn-primary btn-construct" id="btn-execute-reconstruct">
-          <i data-lucide="play"></i> START 3D RECONSTRUCTION
+
+
+        <button class="btn btn-primary btn-construct"
+                id="btn-execute-reconstruct">
+
+          <i data-lucide="play"></i>
+          START 3D RECONSTRUCTION
+
         </button>
-        <button class="btn btn-success" id="btn-modal-open-3d" style="display: none;">
-          <i data-lucide="eye"></i> OPEN 3D MODEL
+
+
+        <button class="btn btn-success"
+                id="btn-modal-open-3d"
+                style="display: none;">
+
+          <i data-lucide="eye"></i>
+          OPEN 3D MODEL
+
         </button>
+
       </div>
+
     </div>
+
   </div>
 
-  <!-- Interactive 3D WebGL Model Viewer Modal -->
-  <div class="modal-backdrop" id="viewer-modal" style="display: none;">
+
+  <!-- 3D Viewer -->
+  <div class="modal-backdrop"
+       id="viewer-modal"
+       style="display: none;">
+
     <div class="modal-card modal-viewer">
+
       <div class="modal-header">
+
         <div class="modal-title-group">
-          <i data-lucide="box" class="icon-accent"></i>
+
+          <i data-lucide="box"
+             class="icon-accent"></i>
+
           <div>
-            <h3>3D Photogrammetry Model Viewer</h3>
-            <p>Interactive WebGL Orbit Controls · Georeferenced Survey Model</p>
+
+            <h3>
+              3D Photogrammetry Model Viewer
+            </h3>
+
+            <p>
+              Interactive WebGL Orbit Controls ·
+              Georeferenced Survey Model
+            </p>
+
           </div>
+
         </div>
-        <button class="modal-close" id="btn-close-viewer">&times;</button>
+
+        <button class="modal-close"
+                id="btn-close-viewer">
+          &times;
+        </button>
+
       </div>
+
 
       <div class="viewer-body">
-        <!-- 3D Canvas Viewport -->
-        <div class="viewer-canvas-container" id="viewer-canvas">
-          <!-- Three.js Canvas injected here -->
+
+        <!-- Canvas -->
+        <div class="viewer-canvas-container"
+             id="viewer-canvas">
         </div>
 
-        <!-- Floating Viewer Toolbar -->
+
+        <!-- Toolbar -->
         <div class="viewer-toolbar">
+
           <div class="viewer-btn-group">
-            <button class="btn btn-xs active" id="btn-mode-textured"><i data-lucide="palette"></i> Textured</button>
-            <button class="btn btn-xs" id="btn-mode-wireframe"><i data-lucide="grid"></i> Wireframe</button>
-            <button class="btn btn-xs" id="btn-mode-points"><i data-lucide="disc"></i> Points</button>
+
+            <button class="btn btn-xs active"
+                    id="btn-mode-textured">
+
+              <i data-lucide="palette"></i>
+              Textured
+
+            </button>
+
+            <button class="btn btn-xs"
+                    id="btn-mode-wireframe">
+
+              <i data-lucide="grid"></i>
+              Wireframe
+
+            </button>
+
+            <button class="btn btn-xs"
+                    id="btn-mode-points">
+
+              <i data-lucide="disc"></i>
+              Points
+
+            </button>
+
           </div>
+
+
           <div class="viewer-btn-group">
-            <button class="btn btn-xs" id="btn-toggle-grid"><i data-lucide="hash"></i> Grid</button>
-            <button class="btn btn-xs" id="btn-toggle-bbox"><i data-lucide="maximize-2"></i> BBox</button>
-            <button class="btn btn-xs" id="btn-reset-cam"><i data-lucide="rotate-ccw"></i> Reset</button>
+
+            <button class="btn btn-xs"
+                    id="btn-toggle-grid">
+
+              <i data-lucide="hash"></i>
+              Grid
+
+            </button>
+
+            <button class="btn btn-xs"
+                    id="btn-toggle-bbox">
+
+              <i data-lucide="maximize-2"></i>
+              BBox
+
+            </button>
+
+            <button class="btn btn-xs"
+                    id="btn-reset-cam">
+
+              <i data-lucide="rotate-ccw"></i>
+              Reset
+
+            </button>
+
           </div>
+
         </div>
 
-        <!-- Floating Model Telemetry Sidebar -->
+
+        <!-- Telemetry -->
         <div class="viewer-telemetry-sidebar">
-          <h4><i data-lucide="info"></i> Model Telemetry</h4>
+
+          <h4>
+            <i data-lucide="info"></i>
+            Model Telemetry
+          </h4>
+
           <div id="viewer-info-content">
-            <div class="spinner" style="margin: 1rem auto;"></div>
+
+            <div class="spinner"
+                 style="margin: 1rem auto;">
+            </div>
+
           </div>
+
+
           <div class="viewer-download-row">
-            <a href="/api/reconstruction/model/glb" download="helenenschacht_3d.glb" class="btn btn-xs btn-primary">
-              <i data-lucide="download"></i> Download GLB
+
+            <a href="/api/reconstruction/model/glb"
+               download="helenenschacht_3d.glb"
+               class="btn btn-xs btn-primary">
+
+              <i data-lucide="download"></i>
+              Download GLB
+
             </a>
-            <a href="/api/reconstruction/mesh" download="helenenschacht_mesh.obj" class="btn btn-xs btn-secondary">
-              <i data-lucide="download"></i> OBJ Mesh
+
+            <a href="/api/reconstruction/mesh"
+               download="helenenschacht_mesh.obj"
+               class="btn btn-xs btn-secondary">
+
+              <i data-lucide="download"></i>
+              OBJ Mesh
+
             </a>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </div>
 
+
   <!-- External Libraries -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <!-- Three.js and Loaders -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
+
 
   <!-- Application Scripts -->
   <script src="/static/js/map.js"></script>
@@ -316,6 +630,6 @@
   <script src="/static/js/viewer3d.js"></script>
   <script src="/static/js/reconstruction.js"></script>
   <script src="/static/js/app.js"></script>
+
 </body>
 </html>
-
